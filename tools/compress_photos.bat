@@ -8,7 +8,15 @@ call :compress_dir
 call :reset
 goto :End
 
+
 :config_default
+if exist ".\images"     if not exist ".\images_raw"  move ".\images" ".\images_raw"
+if exist ".\images_raw" if exist ".\images" rmdir /q/s ".\images"
+if not exist ".\images" if not exist ".\images_raw" goto :error "need to run in parent dir of images"
+call :config ".\images_raw" ".\images"
+goto :eof
+
+:config_test
 call :config "D:\temp\journal" "D:\temp\journal_compressed"
 goto :eof 
 
@@ -27,9 +35,9 @@ where magick.exe 1>nul 2>nul || set "MAGICK_PATH=D:\apps\ImageMagick712Q16"
 where magick.exe 1>nul 2>nul || set "path=%MAGICK_PATH%;%path%"
 where magick.exe 1>nul 2>nul || goto :error "magick.exe not found"
 :: set "INPUT_DIR=D:\Photos\Trekking_Raw"
-set "INPUT_DIR=%~1"
+set "INPUT_DIR=%~f1"
 :: set "OUTPUT_DIR=D:\work\LifeHike\Trekking"
-set "OUTPUT_DIR=%~2"
+set "OUTPUT_DIR=%~f2"
 :: compress quality (1-100)
 set "QUALITY=75"
 :: maximum width (keep proportion)
